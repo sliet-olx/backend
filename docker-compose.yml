@@ -1,0 +1,30 @@
+version: '3.8'  # Version of docker-compose
+
+services:
+  # MongoDB service
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"  # Expose port 27017 for MongoDB
+    volumes:
+      - mongodb_data:/data/db  # Persist MongoDB data in a volume
+
+  # Backend service
+  backend:
+    build:  # Build from Dockerfile in current directory
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend_app
+    depends_on:
+      - mongodb  # Ensure MongoDB starts first
+    ports:
+      - "5050:5050"  # Expose port 5050 for backend
+    volumes:
+      - .:/usr/src/app  # Mount current directory inside container
+    environment:
+      MONGO_URL: "mongodb://mongodb:27017/sliet-olx-db"  # MongoDB connection string in backend
+
+# Volume for MongoDB data
+volumes:
+  mongodb_data:
