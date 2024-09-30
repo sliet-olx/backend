@@ -15,6 +15,10 @@ const productSchema = new Schema({
         type: Number,
         required: true
     },
+    product_is_sold: {
+        type: Boolean,
+        default: false
+    },
     product_description: {
         type: String,
         required: true

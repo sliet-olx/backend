@@ -6,13 +6,10 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Use the MONGO_URI environment variable from the .env file
-const mongoDBUrl = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/sliet-olx';
+const mongoDBUrl = process.env.MONGO_URI || `mongodb://127.0.0.1:27017/sliet-olx`;
 
 // Connecting to MongoDB using the environment variable
-mongoose.connect(mongoDBUrl, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+mongoose.connect(mongoDBUrl);
 
 // Acquiring the connection
 const db = mongoose.connection;
