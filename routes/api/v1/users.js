@@ -4,12 +4,10 @@ const express=require('express');
 const router=express.Router();
 
 const userApi=require('../../../controllers/api/v1/users_api');
-//route for login
-router.post('/create-session',userApi.createSession);
 // route for the signup
 router.post('/create',userApi.create);
-//route for getallusers
-router.get('/getallusers',userApi.getAllUsers);
+//route for login
+router.post('/create-session',userApi.createSession);
 
 //exporting router config to all files so that index.js(of v1) can use it
 module.exports=router;

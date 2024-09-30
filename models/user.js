@@ -8,11 +8,19 @@ const userSchema = new Schema({
         required: true,
         unique: true
     },
+    user_is_verified: { 
+        type: Boolean, 
+        default: false 
+    },
     user_name: {
         type: String,
         required: true
     },
     user_mobile: {
+        type: String,
+        required: true
+    },
+    user_password: {
         type: String,
         required: true
     },
