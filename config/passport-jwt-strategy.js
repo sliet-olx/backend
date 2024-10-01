@@ -17,7 +17,7 @@ var opts = {    //options
 }
 
 passport.use(new JWTStrategy(opts, function(jwtPayLoad, done) {    //options, verify
-    console.log("JWT Payload: ", jwtPayLoad);
+    // console.log("JWT Payload: ", jwtPayLoad);
     // console.log(jwtPayLoad);
     User.findById(jwtPayLoad.id)
     .then((user)=>{
