@@ -100,6 +100,9 @@ module.exports.create = async function(req, res) {
             // product_buyers: [], // Defaults to empty array
             // product_is_sold: false // Defaults to false
         });
+        req.user.user_sells.push(newProduct._id);
+        // console.log("newProduct", newProduct._id);
+        await req.user.save();
         // populate the product_seller field with user_name user_mobile user_hostel
         await newProduct.populate('product_seller', 'user_name user_mobile user_hostel');
         // Optionally, send a WhatsApp message notifying about the new product
@@ -142,7 +145,7 @@ module.exports.sold = async function(req, res) {
             return res.status(400).json({
                 message: "Product ID is required.",
                 nextAction: '/home' // Link to home or relevant page
-            });
+            }); 
         }
 
         // Find the product by ID
@@ -251,21 +254,23 @@ module.exports.buy = async function(req, res) {
         }
 
         // Optional: Prevent users from bidding multiple times on the same product
-        // const existingBid = await Buyer.findOne({
-        //     buyer_user: req.user._id,
-        //     product: product._id
-        // });
+        // console.log("user req", req.user);
+        const existingBid = await Buyer.findOne({
+            buyer_user: req.user._id,
+            buyer_product: product._id
+        });
 
-        // if (existingBid) {
-        //     return res.status(400).json({
-        //         message: "You have already placed a bid on this product.",
-        //         nextAction: `/products/${product._id}`
-        //     });
-        // }
+        if (existingBid) {
+            return res.status(400).json({
+                message: "You have already placed a bid on this product.",
+                nextAction: `/products/${product._id}`
+            });
+        }
 
         // Create a new Buyer document
         const newBuyer = await Buyer.create({
             buyer_user: req.user._id,
+            buyer_product: product._id,
             buyer_min: buyer_min,
             buyer_max: buyer_max
         });
@@ -273,6 +278,8 @@ module.exports.buy = async function(req, res) {
         // Add the Buyer reference to the product's product_buyers array
         product.product_buyers.push(newBuyer._id);
         await product.save();
+        req.user.user_buys.push(productId);
+        await req.user.save();
 
         // Respond to the client
         return res.status(201).json({

@@ -8,6 +8,11 @@ const buyerSchema = new Schema({
         ref: 'User',
         required: true
     },
+    buyer_product: {
+        type: Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
+    },
     buyer_min: {
         type: Number,
         required: true
