@@ -10,4 +10,10 @@ router.post('/verify-otp', otpApi.verifyOtp);
 // Route for regenerating OTP
 router.post('/regenerate-otp', otpApi.regenerateOtp);
 
+// Route to send OTP for password reset
+router.post('/forgot-password', otpApi.sendPasswordResetOtp);
+
+// Route to verify OTP for password reset
+router.post('/verify-reset-otp', otpApi.verifyPasswordResetOtp);
+
 module.exports = router;

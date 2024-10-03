@@ -11,6 +11,10 @@ const otpSchema = new mongoose.Schema({
         type: String, 
         required: true 
     },
+    otp_resetPasswordAllowed: { // New field added
+        type: Boolean,
+        default: false
+    },
     createdAt: Date,
     expiresAt: Date,
 });

@@ -3,6 +3,7 @@
 // Importing the necessary modules
 const jwt = require('jsonwebtoken');
 const User = require('../../../models/user');
+const OTP = require('../../../models/otp');
 // hashing the password
 const bcrypt = require('bcrypt');
 // importing dotenv to use environment variables
@@ -143,7 +144,7 @@ module.exports.createSession = async function(req, res) {
         const token = jwt.sign(
             { id: user._id, email: user.user_email },
             process.env.JWT_SECRET_KEY,
-            { expiresIn: '24h' } // Token valid for 24 hours
+            { expiresIn: '30d' } // Token valid for 30 days
         );
 
         // Prepare user data to send back (excluding sensitive information)
@@ -172,3 +173,73 @@ module.exports.createSession = async function(req, res) {
     }
 };
 
+
+// controllers/authController.js
+
+// Controller to reset password
+module.exports.resetPassword = async (req, res) => {
+    try {
+      const { email, otp, password } = req.body;
+  
+      // Input Validation
+      if (!email || !otp || !password) {
+        return res.status(400).json({
+          message: 'Email, OTP, and new password are required.',
+        });
+      }
+  
+      // Validate password strength (e.g., minimum length)
+      if (password.length < 6) {
+        return res.status(400).json({
+          message: 'Password must be at least 6 characters long.',
+        });
+      }
+  
+      // Find the user by email
+      const user = await User.findOne({ user_email: email });
+      if (!user) {
+        return res.status(404).json({
+          message: 'User not found.',
+        });
+      }
+  
+      // Find the OTP record for the user
+      const otpRecord = await OTP.findOne({ otp_user: user._id }).sort({ createdAt: -1 });
+      if (!otpRecord || !otpRecord.otp_resetPasswordAllowed) {
+        return res.status(400).json({
+          message: 'OTP verification required before resetting password.',
+        });
+      }
+  
+      // Verify the OTP again to ensure security
+      const isMatch = await bcrypt.compare(otp.toString(), otpRecord.otp_otpHashed);
+      if (!isMatch) {
+        return res.status(400).json({
+          message: 'Invalid OTP. Please try again.',
+        });
+      }
+  
+      // Hash the new password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+  
+      // Update the user's password
+      user.user_password = hashedPassword;
+      await user.save();
+  
+      // Delete the OTP record to prevent reuse
+      await OTP.deleteMany({ otp_user: user._id });
+  
+      // Respond to the client
+      return res.status(200).json({
+        message: 'Password reset successful. You can now log in with your new password.',
+      });
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      // logger.error(`Error resetting password for email ${req.body.email}: ${error.message}`);
+      return res.status(500).json({
+        message: 'Internal Server Error. Please try again later.',
+      });
+    }
+};
+  
