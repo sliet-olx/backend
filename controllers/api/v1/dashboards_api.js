@@ -20,11 +20,11 @@ module.exports.sellResponse = async function(req, res) {
                 populate: {
                     path: 'product_buyers',
                     model: 'Buyer',
-                    select: 'buyer_user buyer_min buyer_max',
+                    select: '_id buyer_user buyer_min buyer_max',
                     populate: {
                         path: 'buyer_user',
                         model: 'User',
-                        select: 'user_name user_hostel user_mobile'
+                        select: '_id user_name user_hostel user_mobile'
                     }
                 }
             })
@@ -80,11 +80,11 @@ module.exports.buyRequest = async function(req, res) {
                 populate: {
                     path: 'product_buyers',
                     model: 'Buyer',
-                    select: 'buyer_user buyer_min buyer_max',
+                    select: '_id buyer_user buyer_min buyer_max',
                     populate: {
                         path: 'buyer_user',
                         model: 'User',
-                        select: 'user_name user_hostel user_mobile'
+                        select: '_id user_name user_hostel user_mobile'
                     }
                 }
             })
@@ -105,11 +105,41 @@ module.exports.buyRequest = async function(req, res) {
                 nextAction: '/buy-product' // Link to buy product form/page
             });
         }
+        const products = user.user_buys;
+        // Mask other users' data
+        const maskedProducts = products.map(product => {
+            const maskedBuyers = product.product_buyers.map(buyer => {
+                // If the buyer is the logged-in user, show full details
+                if (buyer.buyer_user._id.toString() === req.user._id.toString()) {
+                    return buyer;
+                }
+
+                // Mask the user's name after first 2 characters
+                let userName = buyer.buyer_user.user_name;
+                if (userName && userName.length > 2) {
+                    const maskedName = userName.substring(0, 2) + '*'.repeat(userName.length - 2);
+                    buyer.buyer_user.user_name = maskedName;
+                }
+
+                // Mask the mobile number, show only last two digits
+                let mobile = buyer.buyer_user.user_mobile;
+                if (mobile && mobile.length >= 2) {
+                    const maskedMobile = '********' + mobile.slice(-2);
+                    buyer.buyer_user.user_mobile = maskedMobile;
+                } else {
+                    buyer.buyer_user.user_mobile = '****';
+                }
+
+                return buyer;
+            });
+            product.product_buyers = maskedBuyers;
+            return product;
+        });
 
         // Respond with the list of products the user is buying or has bid for
         return res.status(200).json({
             message: "List of your buy requests.",
-            products: user.user_buys,
+            products: maskedProducts,
             nextAction: '/dashboard' // Link to dashboard or relevant page
         });
 

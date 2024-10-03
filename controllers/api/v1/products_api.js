@@ -7,7 +7,8 @@ const sendWhatsAppMessage = require('../../../utility/sendWhatsappMessage');
 module.exports.getAllProducts = async function(req, res) {
     try {
         let products = await Product.find({})
-            .populate('product_seller', 'user_name user_hostel');
+            .populate('product_seller', 'user_name user_hostel')
+            .sort({ createdAt: -1 });
 
         return res.status(200).json({
             message: "List of Products",
@@ -59,9 +60,11 @@ module.exports.getProduct = async function(req, res) {
 
 // Create a new product
 module.exports.create = async function(req, res) {
+    // console.log(req);
     try {
         // Extract product details from the request body
-        const { picture, name, price, description } = req.body;
+        const { picture, name, stringPrice, description } = req.body;
+        price = parseInt(stringPrice);
 
         // Input Validation
         if (!picture || !name || !price || !description) {
@@ -228,8 +231,9 @@ module.exports.buy = async function(req, res) {
 
         // Find the product by ID
         const product = await Product.findById(productId)
-            .populate('product_seller', 'user_name user_email'); // Populate seller details
+            .populate('product_buyers', '_id user_name user_email'); // Populate seller details
 
+        console.log("product", product);
         if (!product) {
             return res.status(404).json({
                 message: "Product not found.",
