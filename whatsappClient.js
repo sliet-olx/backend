@@ -9,7 +9,11 @@ const SESSION_PATH = path.join(__dirname, '.wwebjs_auth');
 
 const client = new Client({
   authStrategy: new LocalAuth({ dataPath: SESSION_PATH }),
-  puppeteer: { headless: true } // Set to false if you want to see the browser
+  puppeteer: { 
+       		executablePath: '/snap/bin/chromium', // Replace with the correct path if needed
+        	args: ['--no-sandbox', '--disable-setuid-sandbox'],
+		headless: true 
+	} // Set to false if you want to see the browser
 });
 
 // Event listeners

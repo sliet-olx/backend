@@ -1,6 +1,6 @@
 // listGroup.js
 
-// const client = require('./whatsapp');
+// const client = require('./whatsappClient');
 
 client.on('ready', async () => {
     console.log('WhatsApp Client is ready!');
