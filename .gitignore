@@ -12,3 +12,8 @@ node_modules/
 
 # Optional Mac system files
 .wwebjs*
+
+# chrome ignore for the browser
+chrome-headless-shell/
+chrome/
+
