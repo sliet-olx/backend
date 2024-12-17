@@ -2,6 +2,7 @@
 const Product = require('../../../models/product');
 const Buyer = require('../../../models/buyer');
 const sendWhatsAppMessage = require('../../../utility/sendWhatsappMessage');
+const sendBidNotification = require('../../../utility/sendBidNotification');
 
 // Get all products
 module.exports.getAllProducts = async function(req, res) {
@@ -285,6 +286,10 @@ module.exports.buy = async function(req, res) {
         req.user.user_buys.push(productId);
         await req.user.save();
 
+        // Notify the seller
+        const buyer = await User.findById(req.user._id); // Get buyer details
+        await sendBidNotification(product, buyer, newBuyer);
+        
         // Respond to the client
         return res.status(201).json({
             message: "Your bid has been placed successfully.",
