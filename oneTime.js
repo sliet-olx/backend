@@ -4,6 +4,7 @@ const Product = require('./models/product'); // Product schema
 const User = require('./models/user'); // User schema
 const Buyer = require('./models/buyer'); // Buyer schemaconst sendWhatsAppMessage = require('./utility/sendWhatsappMessage'); // Function to send WhatsApp message
 const db=require('./config/mongoose');
+require('dotenv').config();
 
 // Function to send a WhatsApp message for a specific product by ID
 async function sendProductMessageById(productId) {
@@ -34,23 +35,31 @@ async function sendProductMessageById(productId) {
         console.error('Error sending WhatsApp message:', error);
     }
 }
+// Reversed list of product IDs
+const reversedProductIds = process.env.REVERSED_PRODUCT_IDS.split(',');
 
-// Example usage: Replace 'YOUR_PRODUCT_ID_HERE' with the actual product ID
-const productId = '671b61db572a23cf73cfb999';
+// Function to send the first message after a delay and the rest immediately
+function sendMessagesWithInitialDelay(productIds, initialDelay) {
+    if (productIds.length === 0) {
+        console.log('No product IDs provided.');
+        return;
+    }
+
+    // Extract the first product ID
+    const [firstProductId, ...remainingProductIds] = productIds;
+
+    // Send the first message after the specified initial delay
     setTimeout(() => {
-        sendProductMessageById(productId);
-    }, 30000);
-/*
-const productId1 = '66ff8f2a0716452238b55b67';
-    setTimeout(() => {
-        sendProductMessageById(productId1);
-    }, 29000);
-const productId2 = '670b7815943185388fc2bf9b';
-    setTimeout(() => {
-        sendProductMessageById(productId2);
-    }, 20000);
-const productId3 = '670be7a2943185388fc2bfef';
-    setTimeout(() => {
-        sendProductMessageById(productId3);
-    }, 20000);
-*/
+        console.log(`Sending first WhatsApp message after ${initialDelay / 1000} seconds...`);
+        sendProductMessageById(firstProductId);
+
+        // Send the remaining messages immediately
+        remainingProductIds.forEach(productId => {
+            sendProductMessageById(productId);
+        });
+    }, initialDelay);
+}
+
+// Example usage: Send the first message after 30 seconds, then the rest immediately
+const initialDelayInMilliseconds = 30000; // 30,000 milliseconds = 30 seconds
+sendMessagesWithInitialDelay(reversedProductIds, initialDelayInMilliseconds);

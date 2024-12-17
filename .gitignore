@@ -16,6 +16,3 @@ node_modules/
 # chrome ignore for the browser
 chrome-headless-shell/
 chrome/
-
-chrome-headless-shell/
-chrome/

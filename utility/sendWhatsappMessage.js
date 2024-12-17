@@ -31,7 +31,8 @@ function maskMobile(mobile) {
   return maskedPart + visibleDigits;
 }
 
-const GROUP_CHAT_ID = process.env.GROUP_CHAT_ID;
+const GROUP_CHAT_ID1 = process.env.GROUP_CHAT_ID1;
+const GROUP_CHAT_ID2 = process.env.GROUP_CHAT_ID2;
 
 // Delay function for manual retry
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -78,13 +79,17 @@ const sendWhatsappMessage = async (newProduct, res, retryCount = 3) => {
                 // Create MessageMedia instance from the fetched image buffer
                 const media = new MessageMedia('image/jpeg', imageBuffer.toString('base64'));
 
-                const chat = await client.getChatById(GROUP_CHAT_ID);
-                if (chat.isGroup) {
-                    console.log(`Sending message to group: ${chat.name}`);
-                    const sentMessage = await client.sendMessage(GROUP_CHAT_ID, media, { caption: message });
-                    console.log('Message sent to WhatsApp group:', sentMessage.id._serialized);
-                } else {
-                    console.error('The provided chat ID does not correspond to a group.');
+                // Send the message to both groups
+                const groupIds = [GROUP_CHAT_ID1, GROUP_CHAT_ID2];
+                for (const groupId of groupIds) {
+                    const chat = await client.getChatById(groupId);
+                    if (chat.isGroup) {
+                        console.log(`Sending message to group: ${chat.name}`);
+                        const sentMessage = await client.sendMessage(groupId, media, { caption: message });
+                        console.log('Message sent to WhatsApp group:', sentMessage.id._serialized);
+                    } else {
+                        console.error(`The provided chat ID ${groupId} does not correspond to a group.`);
+                    }
                 }
                 break; // If successful, exit the loop
             } catch (err) {
