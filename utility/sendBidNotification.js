@@ -31,8 +31,8 @@ const sendBidNotification = async (product, buyer, buyerBid) => {
         console.log("Bid notification email sent to seller successfully!");
 
         // Optional: Send a WhatsApp message to the seller
-        const message = `📢 *New Bid Alert*\n\nYour product *${product.product_name}* has received a new bid:\n👤 Buyer: ${buyer.user_name}\n📱 Contact: ${buyer.user_mobile}\n💰 Bid Range: ₹${buyerBid.buyer_min} - ₹${buyerBid.buyer_max}`;
-        await sendWhatsAppMessage({ 
+//        const message = `📢 *New Bid Alert*\n\nYour product *${product.product_name}* has received a new bid:\n👤 Buyer: ${buyer.user_name}\n📱 Contact: ${buyer.user_mobile}\n💰 Bid Range: ₹${buyerBid.buyer_min} - ₹${buyerBid.buyer_max}`;
+/*        await sendWhatsAppMessage({ 
             product_seller: product.product_seller, 
             product_name: product.product_name, 
             buyer_name: buyer.user_name,
@@ -43,6 +43,7 @@ const sendBidNotification = async (product, buyer, buyerBid) => {
         });
 
         console.log("WhatsApp notification sent to seller successfully!");
+*/
     } catch (error) {
         console.error("Error sending bid notification:", error);
     }
