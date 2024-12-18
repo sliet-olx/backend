@@ -1,5 +1,5 @@
 const transporter = require("../config/nodemailer");
-const sendWhatsAppMessage = require("./sendWhatsAppMessage"); // Optional if WhatsApp notification is needed
+//const sendWhatsAppMessage = require("./sendWhatsAppMessage"); // Optional if WhatsApp notification is needed
 require("dotenv").config();
 
 const sendBidNotification = async (product, buyer, buyerBid) => {

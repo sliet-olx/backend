@@ -4,6 +4,7 @@ const Product = require('./models/product'); // Product schema
 const User = require('./models/user'); // User schema
 const Buyer = require('./models/buyer'); // Buyer schema
 const db = require('./config/mongoose');
+const client = require('./whatsappClient'); // WhatsApp client
 require('dotenv').config();
 
 // Function to send a WhatsApp message for a specific product by ID
@@ -61,5 +62,25 @@ async function sendMessagesSequentiallyWithDelay(productIds, initialDelay) {
 }
 
 // Example usage: Send the first message after 30 seconds, then the rest sequentially
-const initialDelayInMilliseconds = 30000; // 30,000 milliseconds = 30 seconds
-sendMessagesSequentiallyWithDelay(reversedProductIds, initialDelayInMilliseconds);
+//const initialDelayInMilliseconds = 60000; // 30,000 milliseconds = 30 seconds
+//sendMessagesSequentiallyWithDelay(reversedProductIds, initialDelayInMilliseconds);
+// Wait for the WhatsApp client to be ready
+client.on('ready', async () => {
+    console.log('WhatsApp Client is ready!');
+
+    const initialDelayInMilliseconds = 30000; // 30,000 milliseconds = 30 seconds
+    await sendMessagesSequentiallyWithDelay(reversedProductIds, initialDelayInMilliseconds);
+});
+
+// Handle WhatsApp client events
+client.on('auth_failure', (msg) => {
+    console.error('Authentication failed:', msg);
+});
+
+client.on('disconnected', (reason) => {
+    console.error('WhatsApp Client disconnected:', reason);
+});
+
+client.on('qr', (qr) => {
+    console.log('QR Code received. Please scan it in WhatsApp.');
+});

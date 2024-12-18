@@ -1,6 +1,7 @@
 // Importing the Product schema module
 const Product = require('../../../models/product');
 const Buyer = require('../../../models/buyer');
+const User = require('../../../models/user');
 const sendWhatsAppMessage = require('../../../utility/sendWhatsappMessage');
 const sendBidNotification = require('../../../utility/sendBidNotification');
 
