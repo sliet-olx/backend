@@ -1,1 +1,2 @@
 hostel change in profile //update profile details
+rm -rf .wwebjs_auth .wwebjs_cache

@@ -233,6 +233,7 @@ module.exports.buy = async function(req, res) {
 
         // Find the product by ID
         const product = await Product.findById(productId)
+            .populate('product_seller', 'user_name user_email user_mobile')
             .populate('product_buyers', '_id user_name user_email'); // Populate seller details
 
         console.log("product", product);
