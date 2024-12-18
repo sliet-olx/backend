@@ -143,8 +143,7 @@ module.exports.createSession = async function(req, res) {
         // User is authenticated; generate JWT token
         const token = jwt.sign(
             { id: user._id, email: user.user_email },
-            process.env.JWT_SECRET_KEY,
-            { expiresIn: '30d' } // Token valid for 30 days
+            process.env.JWT_SECRET_KEY
         );
 
         // Prepare user data to send back (excluding sensitive information)
