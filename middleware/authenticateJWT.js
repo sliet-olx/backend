@@ -12,12 +12,12 @@ const authenticateWithCustomError = (req, res, next) => {
         if (!user) {
             // Check if the token is expired or invalid
             if (info && info.name === 'TokenExpiredError') {
-                return res.status(401).json({
+                return res.status(498).json({
                     message: "Session expired. Please log in again.",
                     nextAction: '/login'
                 });
             }
-            return res.status(401).json({
+            return res.status(440).json({
                 message: "Invalid email or password.",
                 nextAction: '/login'
             });
